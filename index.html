@@ -9,6 +9,9 @@
     <style>
         body {
             font-family: 'Nunito', sans-serif;
+            background-color: black;
+            background-image: url("http://localhost:63342/physics-orbital-simulation/images/background.jpg?_ijt=dlg2dlsoon1k2vfmi8hu5a58ur");
+            color: white;
         }
 
         .container {
@@ -18,6 +21,7 @@
 
         h1 {
             font-size: 48px;
+            line-height: 48px;
         }
 
         .card {
@@ -25,26 +29,26 @@
             border-width: 1px;
             border-color: #9e9e9e;
             border-style: solid;
-            padding: 6px 8px 6px 16px;
+            padding: 6px 8px 12px 16px;
             display: block;
             margin-left: 10px;
             margin-right: 10px;
+            line-height: 30px;
         }
 
         button {
-            border-radius: 10px;
-            box-shadow: 1px 1px 5px 0 #607d8b;
+            border-radius: 5px;
+            box-shadow: 1px 1px 5px 0 rgba(255, 255, 255, 1);
             cursor: pointer;
             transition: box-shadow 0.3s;
             font-family: Nunito, sans-serif;
-            font-size: 18px;
-            padding: 10px 20px 10px 20px;
-            background-color: #FFFFFF;
+            font-size: 14px;
+            padding: 10px 20px 15px 20px;
+            background-color: rgba(0, 0, 0, 0);
+            color: white;
             border-style: solid;
             border-color: #FFFFFF;
-            border-width: 2px;
-            color: #424242;
-            text-decoration: none;
+            border-width: 1px;
         }
 
         button:focus {
@@ -52,7 +56,7 @@
         }
 
         button:hover {
-            box-shadow: 1px 1px 15px 0 #607d8b;
+            box-shadow: 1px 1px 15px 0 rgba(255, 255, 255, 1);
             transition: box-shadow 0.3s;
         }
 
@@ -64,10 +68,12 @@
             top: 0;
             left: 0;
             overflow-x: hidden;
-            padding-top: 20px;
+            padding: 20px 0 20px 0;
             border-right-color: #9e9e9e;
             border-right-width: 1px;
             border-right-style: solid;
+
+            backdrop-filter: blur(5px);
         }
 
         .sidebar-elem {
@@ -80,15 +86,23 @@
 <body>
 
 <div class="sidebar">
-    <div class="card sidebar-elem">
-        i'm a planet
+    <div class="sidebar-elem">
+        <h1>orbital simulation</h1>
     </div>
-    <button class="add sidebar-elem">Add Mass</button>
+    <div class="card sidebar-elem">
+        <b>i'm a planet</b>
+        <div>Mass: 1e9 kg</div>
+        <div>PosX: 0</div>
+        <div>PosY: 0</div>
+        <div>VelX: 10 m/s</div>
+        <div>VelY: 100 m/s</div>
+        <div>AccelX: 100 m/s2</div>
+        <div>AccelY: 100 m/s2</div>
+    </div>
+    <button class="add sidebar-elem" onclick="onCreateCard()">Add Mass</button>
 </div>
 
 <div class="container">
-
-    <h1>orbital simulation</h1>
 
     <canvas id="canvas">
 
@@ -99,9 +113,13 @@
             integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
             crossorigin="anonymous"></script>
 
+    <script src="/objects.js"></script>
+    <script src="/sidebar.js"></script>
+
     <script>
         $(document).ready(() => {
-            let ctx = document.getElementById("canvas").getContext("2d");
+            let ctx = $("#canvas")[0].getContext("2d");
+
             ctx.fillStyle = "#e91e63";
             ctx.fillRect(0, 0, 150, 75);
 
