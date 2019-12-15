@@ -1,18 +1,31 @@
 let movingObjects = [];
 
-let speed = 24*3600/5;
-const GRAVITATIONAL_CONSTANT = 6.67408e-11;
-
-let cWidth = 900, cHeight = 600;
-
 let canvas = $("#canvas");
 let canvasCtx = canvas[0].getContext("2d");
+let cWidth = 900, cHeight = 800;
+
+const GRAVITATIONAL_CONSTANT = 6.67408e-11;
+const ASTRONOMICAL_UNIT = (149.6e6 * 1000);
+
+// need to divide by 60 because of the fps
+let daysPerSecond = 45;
+let speed = 24*60*60/60*daysPerSecond;
+
+let zoomVal = 50;
+let zoom = zoomVal / ASTRONOMICAL_UNIT;
 
 let animationOn = false;
 
-const AU = (149.6e6 * 1000);
-let scalevalue = 50;
-let SCALE = scalevalue / AU;
+// TODO textures?
+let sunTex = new Image();
+let moonTex = new Image();
+let earthTex = new Image();
+
+sunTex.src = 'https://mdn.mozillademos.org/files/1456/Canvas_sun.png';
+moonTex.src = 'https://mdn.mozillademos.org/files/1443/Canvas_moon.png';
+earthTex.src = 'https://mdn.mozillademos.org/files/1429/Canvas_earth.png';
+
+// -=-=-=-=-=-=-=-=-=-=-=-=-
 
 function distBetweenTwoObj(objectA, objectB) {
     return Math.sqrt(Math.pow(objectB.posX-objectA.posX, 2) + Math.pow(objectB.posY-objectA.posY, 2));
@@ -39,10 +52,6 @@ class MovingObject {
     }
 
     // all units in SI
-    genId() {
-        this.id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    }
-
     calcAccel() {
         this.accelX = 0;
         this.accelY = 0;
@@ -74,7 +83,8 @@ class MovingObject {
 
         ctx.beginPath();
         // console.log((this.posX*SCALE + cWidth/2) + " " + (this.posY*SCALE + cHeight/2));
-        ctx.arc(this.posX*SCALE + cWidth/2, this.posY*SCALE + cHeight/2, this.radius, 0, 2*Math.PI, false);
+        //ctx.drawImage(earthTex, this.posX*SCALE + cWidth/2, this.posY*SCALE + cHeight/2, 5, 5);
+        ctx.arc(this.posX*zoom + cWidth/2, this.posY*zoom + cHeight/2, this.radius, 0, 2*Math.PI, false);
         ctx.fill();
     }
 }
@@ -95,7 +105,7 @@ let sun = new MovingObject({
 let earth = new MovingObject({
     id: "earth",
     mass: 5.972e24,
-    posX: -147.09e6*1000, // dist from earth to sun in m
+    posX: 147.09e6*1000, // dist from earth to sun in m
     posY: 0,
     velX: 0,
     velY: 30290,
@@ -105,7 +115,7 @@ let earth = new MovingObject({
     accelY: 0,
 });
 
-// the moon is useless
+// the moon is useless and doesn't work
 let moon = new MovingObject({
     id: "moon",
     mass: 7.3478e22,

@@ -43,3 +43,14 @@ function updateCards() {
         }
     });
 }
+
+function changeSpeed(change) {
+    daysPerSecond = change;
+    speed = 24*60*daysPerSecond;
+    document.getElementById("speedVal").textContent = daysPerSecond;
+}
+
+function changeZoom(delta) {
+    zoomVal += delta;
+    zoom = zoomVal / ASTRONOMICAL_UNIT;
+}
