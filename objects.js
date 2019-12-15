@@ -1,17 +1,25 @@
-let speed = 24*3600/50;
 let movingObjects = [];
-let GRAVITATIONAL_CONSTANT = 6.67408e-11;
-let fps = 60;
+
+let speed = 24*3600/5;
+const GRAVITATIONAL_CONSTANT = 6.67408e-11;
+
+let cWidth = 900, cHeight = 600;
+
+let canvas = $("#canvas");
+let canvasCtx = canvas[0].getContext("2d");
+
+let animationOn = false;
 
 const AU = (149.6e6 * 1000);
 let scalevalue = 50;
 let SCALE = scalevalue / AU;
 
 function distBetweenTwoObj(objectA, objectB) {
-    return Math.sqrt((objectB.posX-objectA.posX)*(objectB.posX-objectA.posX)+(objectB.posY-objectA.posY)*(objectB.posY-objectA.posY));
+    return Math.sqrt(Math.pow(objectB.posX-objectA.posX, 2) + Math.pow(objectB.posY-objectA.posY, 2));
 }
 
 // is magnitude, use angleBetweenTwoObj to find angle
+// (Gmm) / r^2
 function forceBetweenTwoObj(objectA, objectB) {
     let dist = distBetweenTwoObj(objectA, objectB);
     return (GRAVITATIONAL_CONSTANT * objectA.mass * objectB.mass) / (dist*dist);
@@ -21,22 +29,18 @@ function forceBetweenTwoObj(objectA, objectB) {
 function angleBetweenTwoObj(objectA, objectB) {
     let deltaX = objectB.posX-objectA.posX;
     let deltaY = objectB.posY-objectA.posY;
-    return Math.atan(deltaY-deltaX);
+    return Math.atan2(deltaY, deltaX);
 }
 
 class MovingObject {
 
+    constructor(obj) {
+        obj && Object.assign(this, obj);
+    }
+
     // all units in SI
-    constructor() {
+    genId() {
         this.id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-        this.mass = 3e+24;
-        this.posX = 0.0;
-        this.posY = 0.0;
-        this.velX = 0.0;
-        this.velY = 0.0;
-        this.accelX = 0.0;
-        this.accelY = 0.0;
-        this.color = "#FFFFFF";
     }
 
     calcAccel() {
@@ -47,9 +51,9 @@ class MovingObject {
                 let force = forceBetweenTwoObj(this, obj);
                 let rad = angleBetweenTwoObj(this, obj);
 
-                // use minus to reverse vector
-                this.accelX -= (force * Math.cos(rad)) / this.mass;
-                this.accelY -= (force * Math.sin(rad)) / this.mass;
+                // add vector
+                this.accelX += (force * Math.cos(rad)) / this.mass;
+                this.accelY += (force * Math.sin(rad)) / this.mass;
             }
         });
     }
@@ -57,7 +61,6 @@ class MovingObject {
     calcVelocity() {
         this.velX += this.accelX * speed;
         this.velY += this.accelY * speed;
-        this.calcPosition();
     }
 
     calcPosition() {
@@ -70,7 +73,8 @@ class MovingObject {
         ctx.fillStyle = this.color;
 
         ctx.beginPath();
-        ctx.arc(this.posX*SCALE, this.posY*SCALE, 3, 0, 2*Math.PI, false);
+        // console.log((this.posX*SCALE + cWidth/2) + " " + (this.posY*SCALE + cHeight/2));
+        ctx.arc(this.posX*SCALE + cWidth/2, this.posY*SCALE + cHeight/2, this.radius, 0, 2*Math.PI, false);
         ctx.fill();
     }
 }
@@ -82,32 +86,83 @@ let sun = new MovingObject({
     posY: 0,
     velX: 0,
     velY: 0,
+    color: "yellow",
+    radius: 8,
     accelX: 0,
     accelY: 0,
-    color: "yellow",
 });
 
 let earth = new MovingObject({
     id: "earth",
     mass: 5.972e24,
-    posX: -147.09e6*1000,
+    posX: -147.09e6*1000, // dist from earth to sun in m
     posY: 0,
-    velX: 30290,
-    velY: 0,
+    velX: 0,
+    velY: 30290,
     color: "blue",
+    radius: 5,
+    accelX: 0,
+    accelY: 0,
 });
 
+// the moon is useless
+let moon = new MovingObject({
+    id: "moon",
+    mass: 7.3478e22,
+    posX: (-147.09e6-384400)*1000,
+    posY: 0,
+    velX: 0,
+    velY: 30290,
+    color: "pink",
+    radius: 2,
+    accelX: 0,
+    accelY: 0,
+});
+
+movingObjects.push(sun, earth);
+
+function render() {
+    canvasCtx.clearRect(0, 0, canvasCtx.canvas.width, canvasCtx.canvas.height);
+    movingObjects.forEach(obj => {
+        try {
+            obj.calcAccel();
+            obj.calcVelocity();
+            obj.calcPosition();
+            obj.draw(canvasCtx);
+        } catch (e) {} // catch undefined errors if the object is not initialized yet
+    });
+}
+
 function createMovingObject() {
-    let obj = new MovingObject();
+    let obj = new MovingObject({
+        id: "planet",
+        mass: 3e30,
+        posX: -177.09e9,
+        posY: 0,
+        velX: 0,
+        velY: 0,
+        accelX: 0,
+        accelY: 0,
+        color: "purple",
+        radius: 3,
+    });
     movingObjects.push(obj);
     return obj;
 }
 
+updateCards();
 
+// render frames
 function frames() {
     setTimeout(function() {
+        requestAnimationFrame(frames);
 
+        if (animationOn) {
+            render();
+            updateCards();
+        }
     }, 1000/60);
 }
 
+// start rendering frames
 frames();
