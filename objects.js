@@ -2,7 +2,7 @@ let movingObjects = [];
 
 let canvas = $("#canvas");
 let canvasCtx = canvas[0].getContext("2d");
-let cWidth = 900, cHeight = 800;
+let canvasWidth = 900, canvasHeight = 800;
 
 const GRAVITATIONAL_CONSTANT = 6.67408e-11;
 const ASTRONOMICAL_UNIT = (149.6e6 * 1000);
@@ -16,22 +16,15 @@ let zoom = zoomVal / ASTRONOMICAL_UNIT;
 
 let animationOn = false;
 
-// TODO textures?
-let sunTex = new Image();
-let moonTex = new Image();
-let earthTex = new Image();
-
-sunTex.src = 'https://mdn.mozillademos.org/files/1456/Canvas_sun.png';
-moonTex.src = 'https://mdn.mozillademos.org/files/1443/Canvas_moon.png';
-earthTex.src = 'https://mdn.mozillademos.org/files/1429/Canvas_earth.png';
-
 // -=-=-=-=-=-=-=-=-=-=-=-=-
 
+// get distance between two objects
 function distBetweenTwoObj(objectA, objectB) {
     return Math.sqrt(Math.pow(objectB.posX-objectA.posX, 2) + Math.pow(objectB.posY-objectA.posY, 2));
 }
 
-// is magnitude, use angleBetweenTwoObj to find angle
+// get the magnitude of force between two objects
+// use angleBetweenTwoObj to find angle
 // (Gmm) / r^2
 function forceBetweenTwoObj(objectA, objectB) {
     let dist = distBetweenTwoObj(objectA, objectB);
@@ -45,6 +38,7 @@ function angleBetweenTwoObj(objectA, objectB) {
     return Math.atan2(deltaY, deltaX);
 }
 
+// mass object
 class MovingObject {
 
     constructor(obj) {
@@ -52,26 +46,29 @@ class MovingObject {
     }
 
     // all units in SI
+    // calculate net force
     calcAccel() {
         this.accelX = 0;
         this.accelY = 0;
-        movingObjects.forEach(obj => {
+        movingObjects.forEach(obj => { // loop through all objects and add its force on this object
             if (obj !== this) {
                 let force = forceBetweenTwoObj(this, obj);
                 let rad = angleBetweenTwoObj(this, obj);
 
                 // add vector
-                this.accelX += (force * Math.cos(rad)) / this.mass;
+                this.accelX += (force * Math.cos(rad)) / this.mass; // turn force into acceleration
                 this.accelY += (force * Math.sin(rad)) / this.mass;
             }
         });
     }
 
+    // calculate velocity based on acceleration
     calcVelocity() {
         this.velX += this.accelX * speed;
         this.velY += this.accelY * speed;
     }
 
+    // calculate position based on velocity
     calcPosition() {
         this.posX += this.velX * speed;
         this.posY += this.velY * speed;
@@ -82,13 +79,12 @@ class MovingObject {
         ctx.fillStyle = this.color;
 
         ctx.beginPath();
-        // console.log((this.posX*SCALE + cWidth/2) + " " + (this.posY*SCALE + cHeight/2));
-        //ctx.drawImage(earthTex, this.posX*SCALE + cWidth/2, this.posY*SCALE + cHeight/2, 5, 5);
-        ctx.arc(this.posX*zoom + cWidth/2, this.posY*zoom + cHeight/2, this.radius, 0, 2*Math.PI, false);
+        ctx.arc(this.posX*zoom + canvasWidth/2, this.posY*zoom + canvasHeight/2, this.radius, 0, 2*Math.PI, false);
         ctx.fill();
     }
 }
 
+// prebuilt objects
 let sun = new MovingObject({
     id: "sun",
     mass: 1.989e30,
@@ -115,25 +111,51 @@ let earth = new MovingObject({
     accelY: 0,
 });
 
-// the moon is useless and doesn't work
-let moon = new MovingObject({
-    id: "moon",
-    mass: 7.3478e22,
-    posX: (-147.09e6-384400)*1000,
+let comet = new MovingObject({
+    id: "comet",
+    mass: 5.972e21,
+    posX: 177.09e6*1000,
     posY: 0,
-    velX: 0,
-    velY: 30290,
+    velX: 10000,
+    velY: 35290,
     color: "pink",
-    radius: 2,
+    radius: 3,
     accelX: 0,
     accelY: 0,
 });
 
-movingObjects.push(sun, earth);
+let betelgeuse = new MovingObject({
+    id: "betelgeuse",
+    mass: 2.188e31,
+    posX: 247.09e6*1000,
+    posY: 0,
+    velX: 0,
+    velY: 20290,
+    color: "red",
+    radius: 10,
+    accelX: 0,
+    accelY: 0,
+});
 
+let jupiter = new MovingObject({
+    id: "jupiter",
+    mass: 1.898e27,
+    posX: 783.06e6*1000, // dist from earth to sun in m
+    posY: 0,
+    velX: 0,
+    velY: 13070,
+    color: "orange",
+    radius: 7,
+    accelX: 0,
+    accelY: 0,
+});
+
+movingObjects.push(new MovingObject(sun), new MovingObject(earth), new MovingObject(comet));
+
+// render a single frame
 function render() {
-    canvasCtx.clearRect(0, 0, canvasCtx.canvas.width, canvasCtx.canvas.height);
-    movingObjects.forEach(obj => {
+    canvasCtx.clearRect(0, 0, canvasCtx.canvas.width, canvasCtx.canvas.height); // clear screen
+    movingObjects.forEach(obj => { // render each object
         try {
             obj.calcAccel();
             obj.calcVelocity();
@@ -149,8 +171,8 @@ function createMovingObject() {
         mass: 3e30,
         posX: -177.09e9,
         posY: 0,
-        velX: 0,
-        velY: 0,
+        velX: 30000,
+        velY: -30000,
         accelX: 0,
         accelY: 0,
         color: "purple",

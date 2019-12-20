@@ -121,6 +121,8 @@
             z-index: 1;
         }
 
+
+
         /* width */
         ::-webkit-scrollbar {
             width: 10px;
@@ -151,28 +153,44 @@
         <h1>orbital simulation</h1>
     </div>
     <button class="sidebar-elem" id="play" onclick="toggleAnimation()">Play</button>
+    <button class="sidebar-elem" onclick="onCreateCard()" id="add-mass">Add Custom Mass</button>
     <span id="cards"></span>
-    <button class="sidebar-elem" onclick="onCreateCard()">Add Mass</button>
 </div>
 
 <div class="sidebar sidebar-right">
+    <button class="sidebar-elem" onclick="window.location.reload(false)">Reset</button>
+
     <div class="sidebar-elem">
         Speed: <span id="speedVal">45</span> earth days per second
     </div>
+
     <div class="sidebar-elem">
         <input type="number" value="45" id="speedChange">
         <button onclick="changeSpeed(document.getElementById('speedChange').value)">Change Speed</button>
     </div>
+
     <div class="sidebar-elem">
-        <button onclick="changeZoom(10)">Zoom In</button>
-        <button onclick="changeZoom(-10)">Zoom Out</button>
+        <button onclick="changeZoom(5)">Zoom In</button>
+        <button onclick="changeZoom(-5)">Zoom Out</button>
+    </div>
+
+    <div class="sidebar-elem">
+        <select id="add-prebuilt">
+            <option value="betelgeuse">Betelgeuse</option>
+            <option value="sun">Sun</option>
+            <option value="earth">Earth</option>
+            <option value="jupiter">Jupiter</option>
+            <option value="pluto">Pluto</option>
+            <option value="devin">Devin</option>
+        </select>
+        <button onclick="addPrebuilt()">Add</button>
     </div>
 
 </div>
 
 <div class="container">
 
-    <canvas id="canvas" width="900" height="800"></canvas>
+    <canvas id="canvas" width="900" height="850"></canvas>
 
     <script
             src="https://code.jquery.com/jquery-3.4.1.min.js"
