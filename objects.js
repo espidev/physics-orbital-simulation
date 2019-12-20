@@ -140,12 +140,25 @@ let betelgeuse = new MovingObject({
 let jupiter = new MovingObject({
     id: "jupiter",
     mass: 1.898e27,
-    posX: 783.06e6*1000, // dist from earth to sun in m
+    posX: 783.06e6*1000,
     posY: 0,
     velX: 0,
     velY: 13070,
     color: "orange",
     radius: 7,
+    accelX: 0,
+    accelY: 0,
+});
+
+let devin = new MovingObject({
+    id: "devin in space",
+    mass: 59,
+    posX: 148.06e6*1000,
+    posY: 0,
+    velX: 0,
+    velY: 10290,
+    color: "#e91e73",
+    radius: 2,
     accelX: 0,
     accelY: 0,
 });

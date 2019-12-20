@@ -121,7 +121,39 @@
             z-index: 1;
         }
 
+        select {
+            margin: 3px 3px 3px 0;
+            width: 200px;
+            padding: 10px;
+            outline: none;
+            border-style: none none solid none;
+            border-color: #9E9E9E;
+            border-width: 2px;
+            font-size: 16px;
+            color: white;
+            transition: box-shadow 0.3s, background-color 0.5s;
+            background: transparent;
+        }
 
+        select:after {
+            border: none;
+        }
+
+        select:hover {
+            box-shadow: 1px 4px 2px -2px #9E9E9E;
+            border-color: #757575;
+            transition: border-color 0.5s, box-shadow 0.3s, background 0.5s;
+        }
+
+        select:focus {
+            border-color: #424242;
+            box-shadow: 1px 4px 2px -2px #9E9E9E;
+        }
+
+        option {
+            background: black;
+            color: white;
+        }
 
         /* width */
         ::-webkit-scrollbar {
@@ -180,7 +212,6 @@
             <option value="sun">Sun</option>
             <option value="earth">Earth</option>
             <option value="jupiter">Jupiter</option>
-            <option value="pluto">Pluto</option>
             <option value="devin">Devin</option>
         </select>
         <button onclick="addPrebuilt()">Add</button>

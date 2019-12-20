@@ -61,6 +61,9 @@ function addPrebuilt() {
         case "Pluto":
             obj = pluto;
             break;
+        case "Devin":
+            obj = devin;
+            break;
     }
     obj = new MovingObject(obj);
     movingObjects.push(obj);
